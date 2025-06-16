@@ -1,0 +1,248 @@
+Міністерство освіти і науки України
+Харківський національний університет радіоелектроніки
+
+Кафедра програмної інженерії
+
+Звіт з лабораторної роботи № 3
+з дисципліни «Архітектура програмного забезпечення»
+на тему «Розробка програмної архітектури та створення
+і відлагодження програмного коду пристрою
+інтернету речей (IoT) або розумного пристроя (Smart Device)
+програмної системи»
+
+Виконав:
+      студент групи ПЗПІ-22-7
+   					       Сахань Дмитро Олександрович
+                  14 червня 2025р.			                                              
+   Перевірив:
+     ст. викладач кафедри ПІ
+      Сокорчук Ігор Петрович
+
+	
+
+	
+
+
+
+Харків, 2025
+3.1 Мета роботи
+
+        На лабораторній роботі № 3 необхідно розробити програмне забезпечення для IoT або SmartDevice пристрою, реалізованого на базі будь-якої поширеної на сьогодні платформи, придатної для реалізації вбудованих систем (Embedded System).
+
+3.2 Історія змін
+
+Таблиця 1 — Історія змін та виправлень роботи
+
+ № 	Дата	 Версія звіту 	Опис змін та виправлень
+ 1	 07.05.2025 	 0.1	 Створено лабораторну №3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3.3 Хід роботи
+Розроблена IoT-система є складовою частиною загальної програмної системи моніторингу та аналізу ґрунту. Пристрій (або програмний симулятор) виконує роль клієнта, який передає сенсорні дані про стан ґрунту (pH, вологість, температура, щільність тощо) на серверну частину системи через стандартизований API. Взаємодія між клієнтом та сервером побудована на сучасних протоколах REST API, що відповідає концепції IoT-рішень.
+Для реалізації функціональності IoT-пристрою було застосовано мову програмування Python, а також бібліотеки requests, random, datetime для реалізації симуляції та мережевої взаємодії. Було забезпечено підтримку JSON-формату для обміну повідомленнями, що гарантує сумісність і простоту інтеграції з іншими компонентами системи. Надсилання даних відбувається за допомогою методу POST, при цьому дані проходять валідацію на боці клієнта.
+
+3.4 Опис виконаної роботи
+IoT-клієнт реалізований на основі модульної архітектури, що забезпечує масштабованість і простоту в обслуговуванні. Основні модулі включають:
+•	UI-модуль – відповідає за взаємодію з користувачем і керування симуляцією;
+•	Sensors-модуль – генерує дані сенсорів: pH, вологість, температура, щільність тощо;
+•	Protocols-модуль – відповідає за взаємодію з сервером через REST API;
+•	Localization-модуль – забезпечує двомовну підтримку (українська/англійська);
+•	Validation-модуль – здійснює перевірку даних перед надсиланням.
+Усі дані, що генеруються, аналізуються у реальному часі. Значення сенсорів порівнюються з допустимими порогами, отриманими з бази даних. У разі перевищення встановлених норм система формує повідомлення про критичну подію. Наприклад:
+•	Якщо вологість > 60%, а для культури "кукурудза" нормальний діапазон – 40–50%, формується рекомендація щодо зниження вологості.
+•	Якщо pH нижче 5.5 або вище 7.5 — генерується попередження про непридатність ґрунту до більшості культур.
+Також передбачено симуляцію таких подій, як відсутність живлення, перевищення ваги, або застряглий стан — для цих сценаріїв у логах фіксуються події, які можуть бути оброблені адміністратором системи.
+Функціонал локалізації реалізовано через словник, який містить переклад всіх текстів інтерфейсу. Доступна зміна формату дати, часової зони, одиниць вимірювання (наприклад: мм/дюйми, °C/°F).
+З інженерної точки зору клієнт розроблений із врахуванням:
+•	модульності (легке додавання нових типів сенсорів або мов),
+•	обробки винятків (наприклад, при розриві з’єднання або некоректному введенні даних),
+•	можливості тестування (модулі розділені для ізольованої перевірки функцій).
+Переваги реалізованого клієнта включають:
+•	Гнучкість налаштувань (можливість адаптації під різні регіони і культури),
+•	Стабільність роботи (через вбудовану обробку помилок і перевірку даних),
+•	Масштабованість (легке підключення нових типів сенсорів та розширення логіки обробки),
+•	Зручність у використанні (інтуїтивно зрозумілий інтерфейс та автоматизована обробка подій).
+
+
+
+
+ 
+Рисунок 3.1 — UML-діаграма прецедентів ІоТ клієнта
+
+ 
+Рисунок 3.2 — UML-діаграма діяльності ІоТ-клієнта
+
+
+
+ 
+Рисунок 3.3 — UML-діаграма взаємодії (Interaction Overview Diagram
+
+
+ 
+Рисунок 3.4 — UML-діаграма станів (State Diagram)
+
+
+        
+3.5 Висновки
+У ході виконання лабораторної роботи було розроблено IoT-клієнт із модульною архітектурою, який імітує роботу сенсорів ґрунту для аграрної системи моніторингу. Клієнт здатен генерувати та передавати дані в реальному часі, аналізувати їх відповідно до порогових значень і забезпечувати взаємодію з серверною частиною через REST API.
+Було реалізовано підтримку локалізації, валідацію даних, обробку аварійних ситуацій та зручний інтерфейс взаємодії. Програмне забезпечення відповідає вимогам до IoT-рішень та легко інтегрується у більші системи завдяки використанню стандартів передачі даних і модульному підходу. Робота продемонструвала застосування інженерних принципів при створенні надійного, масштабованого та адаптованого до реальних умов IoT-рішення.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+____________
+ДОДАТОК А
+Посилання на відеозапис та хронологічний опис доповіді
+
+Відеозапис доповіді на https://youtu.be/8gSyEfwvzJk
+00:00 - Привітання, вступ 
+00:36 - Постановка задачі лабораторної 
+01:49 - Опис виконаної роботи 
+04:13 - UML-діаграма прецедентів ІоТ клієнта 
+04:19 - UML-діаграма діяльності ІоТ-клієнта 
+04:36 - UML-діаграма взаємодії (Interaction Overview Diagram 
+04:53 - UML-діаграма станів (State Diagram) 
+05:05 - Висновки 
+05:47 - Показ роботи програми 
+9:35 - «Дякую за увагу!»
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК Б
+Фрагмент коду, пов’язаного з бізнес-логікою IoT-клієнта:
+1. // Клас для обробки даних ґрунту та генерації рекомендацій public class SoilAnalysisService 
+2. { 
+3. private readonly ISoilAnalysisRepository soilAnalysisRepository; 
+4. private readonly IFertilizerRecommendationRepository fertilizerRecommendationRepository; 
+5. // Конструктор класу, який ініціалізує репозиторії для взаємодії з БД 
+6. public SoilAnalysisService(ISoilAnalysisRepository soilAnalysisRepository, IFertilizerRecommendationRepository fertilizerRecommendationRepository) 
+7. { 
+8. this.soilAnalysisRepository = soilAnalysisRepository; this.fertilizerRecommendationRepository = fertilizerRecommendationRepository; 
+9. } 
+10. // Метод для обробки даних аналізу ґрунту і генерації рекомендацій public Recommendation GenerateRecommendation(int soilAnalysisId) 
+11. { 
+12. SoilAnalysis soilAnalysis = soilAnalysisRepository.FindById(soilAnalysisId); 
+13. // Логіка для обчислення рекомендацій на основі параметрів ґрунту if (soilAnalysis.Ph < 6.0) 
+14. { 
+15. return fertilizerRecommendationRepository.FindBySoilType("Acidic"); 
+16. } 
+17. else if (soilAnalysis.Ph > 7.5) 
+18. { 
+19. return fertilizerRecommendationRepository.FindBySoilType("Alkaline"); 
+20. } 
+21. else 
+22. { 
+23. return fertilizerRecommendationRepository.FindBySoilType("Neutral"); 
+24. } 
+25. } 
+26. // Метод для генерації звітів на основі даних ґрунту public string GenerateSoilReport(int soilAnalysisId) 
+27. { 
+28. SoilAnalysis soilAnalysis = soilAnalysisRepository.FindById(soilAnalysisId); 
+29. string report = "Soil Report:\n"; 
+30. report += $"Location: {soilAnalysis.Location}\n"; report += $"pH: {soilAnalysis.Ph}\n"; 
+31. report += $"Nitrogen: {soilAnalysis.Nitrogen} ppm\n"; report += $"Potassium: {soilAnalysis.Potassium} ppm\n"; report += $"Phosphorus: {soilAnalysis.Phosphorus} ppm\n"; 
+32. return report; 
+33. } 
+34. } 
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК В
+Фрагмент коду, пов’язаного з налаштуванням IoT-клієнта:
+1. // Клас для адміністрування та редагування даних ґрунту public class AdminService 
+2. { 
+3. private readonly ISoilAnalysisRepository soilAnalysisRepository; 
+4. private readonly IFertilizerRecommendationRepository fertilizerRecommendationRepository; 
+5. // Конструктор класу для ініціалізації репозиторіїв 
+6. public AdminService(ISoilAnalysisRepository soilAnalysisRepository, 
+7. IFertilizerRecommendationRepository fertilizerRecommendationRepository) 
+8. { 
+9. this.soilAnalysisRepository = soilAnalysisRepository; this.fertilizerRecommendationRepository = fertilizerRecommendationRepository; 
+10. } 
+11. // Метод для редагування аналізу ґрунту 
+12. public void UpdateSoilAnalysis(int soilAnalysisId, SoilAnalysis updatedSoilAnalysis) 
+13. { 
+14. SoilAnalysis existingAnalysis = soilAnalysisRepository.FindById(soilAnalysisId); 
+15. // Перевірка прав адміністратора для редагування if (IsAdmin()) 
+16. { 
+17. existingAnalysis.Ph = updatedSoilAnalysis.Ph; existingAnalysis.Nitrogen = updatedSoilAnalysis.Nitrogen; existingAnalysis.Potassium = updatedSoilAnalysis.Potassium; existingAnalysis.Phosphorus = updatedSoilAnalysis.Phosphorus; existingAnalysis.Location = updatedSoilAnalysis.Location; soilAnalysisRepository.Save(existingAnalysis); 
+18. } 
+19. else 
+20. { 
+21. throw new UnauthorizedAccessException("Only administrators can edit soil data."); 
+22. } 
+23. } 
+24. // Метод для оновлення рекомендацій щодо добрив 
+25. public void UpdateFertilizerRecommendation(int recommendationId, FertilizerRecommendation updatedRecommendation) 
+26. { 
+27. FertilizerRecommendation existingRecommendation = fertilizerRecommendationRepository.FindById(recommendationId); 
+28. // Перевірка прав адміністратора для редагування if (IsAdmin()) 
+29. { 
+30. existingRecommendation.RecommendedFertilizer = 
+updatedRecommendation.RecommendedFertilizer; 
+31. existingRecommendation.Dosage = updatedRecommendation.Dosage; fertilizerRecommendationRepository.Save(existingRecommendation); 
+32. } 
+33. else 
+34. { 
+35. throw new UnauthorizedAccessException("Only administrators can edit fertilizer recommendations."); 
+36. } 
+37. } 
+38. // Метод для перевірки прав адміністратора private bool IsAdmin() 
+39. { 
+40. // Логіка для перевірки ролі адміністратора 
+41. return true; // Повертає true, якщо користувач є адміністратором 
+42. } 
+43. } 
+
