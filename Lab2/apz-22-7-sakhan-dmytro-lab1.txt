@@ -1,0 +1,485 @@
+Міністерство освіти і науки України
+Харківський національний університет радіоелектроніки
+
+Кафедра програмної інженерії
+
+Звіт з лабораторної роботи № 2
+з дисципліни «Архітектура програмного забезпечення»
+на тему «Розробка програмної архітектури,
+створення та відлагодження програмного коду
+серверної частини програмної системи»
+
+Виконав:
+      студент групи ПЗПІ-22-7
+   					       Сахань Дмитро Олександрович
+                  14 червня 2025р.			                                              
+   Перевірив:
+     ст. викладач кафедри ПІ
+      Сокорчук Ігор Петрович
+
+	
+
+	
+
+
+
+
+Харків, 2025
+2.1 Мета роботи На лабораторній роботі №2 потрібно розробити серверну / back-end частину програмної системи.
+2.2 Історія змін
+
+Таблиця 1 — Історія змін та виправлень роботи
+
+ № 	Дата	 Версія звіту 	Опис змін та виправлень
+ 1	 06.05.2025 	 0.1	 Створено лабораторну №2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2.3 Завдання
+Розробити серверну частину програмної системи моніторингу та аналізу ґрунту з можливістю збереження, обробки та аналізу даних, отриманих від користувачів, а також формування рекомендацій на основі бази знань.
+
+2.4 Опис виконаної роботи
+Для реалізації серверної частини програмної системи моніторингу та аналізу ґрунту було обрано такі технології та інструменти:
+•	C# — мова програмування для реалізації логіки взаємодії з базою даних, API та бізнес-правил.
+•	Microsoft SQL Server — реляційна база даних для збереження записів про стан ґрунту, погодні умови, сезони, користувачів та еталонні значення.
+•	Marshmallow — бібліотека для валідації, серіалізації та десеріалізації JSON-даних.
+•	Swagger (OpenAPI) — генерація документації для REST API.
+
+Перед розробкою серверної частини було створено відповідну UML-діаграму прецедентів для кращого розуміння майбутньої роботи (рисунок 2.1).
+ 
+Рисунок 2.1 — UML-діаграма прецедентів серверної частини
+
+Створено ER-діаграму для визначення з таблицями, які необхідно створити (рисунок 2.2).
+ 
+Рисунок 2.2 — ER-діаграма даних
+
+У відповідності до ER-діаграми було створено базу даних на Microsoft SQL Server (див. додаток Б).
+ 
+Рисунок 2.3 — Діаграма структури БД
+
+
+
+Архітектура рішення
+Серверна частина реалізована за принципами багаторівневої архітектури. Основні її компоненти:
+•	База даних:
+o	Таблиці soil_analysis, weather_data, planting_seasons, fertilizer_recommendations, users.
+o	Зв’язки між таблицями забезпечують цілісність та дозволяють формувати звіти на основі кількох параметрів.
+•	REST API:
+o	Маршрути для додавання, редагування та видалення аналізів ґрунту, погодних умов, сезонів висадки, користувачів.
+o	Окремий маршрут /recommendations/<analysis_id> виконує запит до бази знань та формує рекомендації на основі поточних даних.
+•	Алгоритм рекомендацій:
+o	Для кожної культури зберігаються еталонні показники.
+o	Після збереження аналізу система порівнює введені користувачем значення з допустимими межами для вибраної культури.
+o	Якщо спостерігається відхилення (наприклад, вологість > 60%, а допустимий максимум — 50%), генерується повідомлення: "⚠️ Вологість перевищує норму для кукурудзи".
+REST API
+Основні маршрути API:
+Метод	Шлях	Опис
+POST	/soil-analysis/	Додати новий запис аналізу ґрунту
+GET	/soil-analysis/	Отримати всі записи аналізу ґрунту
+GET	/soil-analysis/	Отримати конкретний запис аналізу
+DELETE	/soil-analysis/	Видалити аналіз
+POST	/weather/	Додати погодні дані
+POST	/recommendations/	Отримати рекомендації для аналізу
+Фрагменти програмного коду з логікою взаємодії серверної частини з БД та клієнтами дивіться в додатках В та Г відповідно.
+Бізнес-логіка серверної частини
+Бізнес-логіка серверної частини розроблена для забезпечення автоматизації, аналізу та оптимізації основних процесів, пов’язаних із моніторингом стану ґрунту, агрокліматичних показників та наданням рекомендацій щодо посівів. Вона покриває функціональні можливості, визначені у пункті 2.2 документа Vision & Scope, зокрема:
+1.	Автоматичний моніторинг параметрів ґрунту та погодних умов у реальному часі (MF-1).
+2.	Виявлення відхилень від оптимальних значень для певної культури, формування попереджень та рекомендацій (MF-2).
+3.	Аналіз введених даних з метою генерації аналітичних звітів, побудови прогнозів родючості та умов для вирощування (MF-3).
+4.	Сегментація ділянок за типом ґрунту, рівнем вологості, кислотністю, що дає змогу адаптувати рекомендації до конкретного поля або регіону (MF-3).
+5.	Налаштування порогових значень для аналізу, конфігурація системи агрономом або адміністратором (MF-8).
+
+Переваги рішення
+Рішення вирізняється наступними характеристиками:
+•	Автоматизація ключових агрономічних процесів, що зменшує вплив людського фактору на аналіз даних.
+•	Гнучкість системи, яка дозволяє адаптуватися під різні культури, кліматичні зони або агротехнічні стратегії.
+•	Масштабованість, яка забезпечує подальше розширення функціоналу без потреби у значному переписуванні коду.
+•	Аналітична основа, що дозволяє виявляти приховані загрози — наприклад, виснаження ґрунту або надлишок вологи.
+
+
+Принципи реалізації
+1.	Модульність
+•	Логіка розділена на окремі модулі: введення даних, аналіз, рекомендації, облік сезонності.
+•	Наприклад, окремо реалізовані модулі для перевірки вологості, кислотності та метеоумов.
+2.	Автоматизація
+•	Система сама аналізує дані, збережені в базі, та визначає, чи потребують вони агрономічної уваги.
+•	Реалізоване очищення застарілих записів, що більше не є релевантними.
+3.	Інтеграція аналітики
+•	Використовуються формули та таблиці з нормативними значеннями для різних культур (наприклад, кукурудза: вологість — 50–60%).
+•	Система генерує повідомлення: «⚠️ Вологість для кукурудзи перевищує норму».
+4.	Гнучкість налаштувань
+•	Адміністратор може редагувати допустимі значення pH, вологості, температури та інше.
+•	Налаштування зберігаються в окремій таблиці конфігурації бази даних.
+5.	Безпека
+•	Доступ до панелі адміністратора захищено паролем.
+•	Усі дії користувачів логуються, а важливі дані можуть бути експортовані для резервного копіювання.
+
+Функції адміністрування
+1.	Керування параметрами
+•	Зміна допустимих діапазонів для різних культур (наприклад, pH для картоплі: 5.5–6.5).
+•	Налаштування періодичності збору даних або інтеграції з IoT-сенсорами.
+2.	Моніторинг системи
+•	Адміністратор може бачити звіт по всіх внесених даних за ділянками.
+•	Передбачене відображення карти з кольоровим індикатором стану ділянок.
+3.	Управління ролями
+•	Ролі: користувач, агроном, адміністратор.
+•	Функція реєстрації зберігає дані користувача у localStorage або базу.
+
+ 
+Рисунок 2.4 — UML-діаграма діяльності для серверної частини
+  
+ 
+Рисунок 2.5 — UML-діаграма взаємодії для серверної частини
+
+ 
+Рисунок 2.6 — UML-діаграма розгортання (Deployment Diagram)
+
+Результати
+Серверна частина забезпечує обробку запитів, перевірку правильності даних, взаємодію з базою даних, автоматичну генерацію рекомендацій. Уся логіка розділена на модулі, що дозволяє легко масштабувати або змінювати компоненти системи.
+Реалізовано також авторизацію адміністратора, захист окремих маршрутів і логування помилок. Система дозволяє вести історію аналізів, що робить її придатною для агроаналітики.
+
+
+
+2.5 Висновки
+У результаті виконання лабораторної роботи було успішно реалізовано серверну частину системи моніторингу та аналізу ґрунту, яка включає:
+•	створення бази даних згідно ER-діаграми;
+•	розробку API для взаємодії з клієнтами;
+•	реалізацію модуля рекомендацій на основі порівняння з нормативами;
+•	забезпечення модульності, безпеки та масштабованості рішення.
+Серверна частина підтримує збереження всіх необхідних даних, дозволяє їх обробку, аналіз і формування висновків для користувача. Отримані результати можуть слугувати основою для розширення функціоналу, впровадження ML-модулів у майбутньому та інтеграції з мобільними або вебзастосунками.
+
+	
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК А
+Посилання на відеозапис та хронологічний опис доповіді
+
+
+Відеозапис доповіді на https://youtu.be/JwwGU4y9vAQ
+00:00 - Привітання, вступ 
+00:36 - Постановка задачі лабораторної 
+01:48 - UML-діаграма прецедентів серверної частини 
+02:41 - ER-діаграма даних 
+03:48 - Діаграма структури БД 
+03:57 - Архітектура рішення 
+05:45 - Бізнес-логіка серверної частини 
+07:15 - Функції адміністрування 
+08:21 - Показ роботи програми 
+13:55 - «Дякую за увагу!»
+
+________________
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК Б
+SQL-скрипт створення БД
+
+1. CREATE DATABASE SoilAnalysisDB; 
+2. USE SoilAnalysisDB; 
+3. CREATE TABLE users ( 
+4. id INT PRIMARY KEY AUTO_INCREMENT, 
+5. username VARCHAR(255) UNIQUE NOT NULL, 
+6. password_hash VARCHAR(255) NOT NULL, 
+7. role VARCHAR(50) NOT NULL, 
+8. created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+9. ); 
+10. CREATE TABLE soil_analysis ( 
+11. id INT PRIMARY KEY AUTO_INCREMENT, 
+12. user_id INT NOT NULL, 
+13. analysis_date DATE NOT NULL, 
+14. location VARCHAR(255) NOT NULL, 
+15. ph DECIMAL(5,2) NOT NULL, 
+16. nitrogen DECIMAL(5,2) NOT NULL, 
+17. potassium DECIMAL(5,2) NOT NULL, 
+18. phosphorus DECIMAL(5,2) NOT NULL, 
+19. moisture DECIMAL(5,2) NOT NULL, 
+20. density DECIMAL(5,2) NOT NULL, 
+21. crop VARCHAR(255) NOT NULL, 
+22. FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE 
+23. ); 
+24. CREATE TABLE planting_seasons ( 
+25. id INT PRIMARY KEY AUTO_INCREMENT, 
+26. crop VARCHAR(255) NOT NULL, 
+27. season VARCHAR(255) NOT NULL, 
+28. notes TEXT 
+29. ); 
+30. CREATE TABLE fertilizer_recommendations ( 
+31. id INT PRIMARY KEY AUTO_INCREMENT, 
+32. analysis_id INT NOT NULL, 
+33. recommended_fertilizer VARCHAR(255) NOT NULL, 
+34. dosage VARCHAR(255) NOT NULL, 
+35. recommendation_text TEXT, 
+36. FOREIGN KEY (analysis_id) REFERENCES soil_analysis(id) ON DELETE CASCADE 
+37. ); 
+38. CREATE TABLE weather_data ( 
+39. id INT PRIMARY KEY AUTO_INCREMENT, 
+40. analysis_id INT NOT NULL, 
+41. temperature DECIMAL(5,2), 
+42. humidity DECIMAL(5,2), 
+43. precipitation DECIMAL(5,2), 
+44. wind_speed DECIMAL(5,2), 
+45. weather_notes TEXT, 
+46. FOREIGN KEY (analysis_id) REFERENCES soil_analysis(id) ON DELETE CASCADE 
+47. ); 
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК B
+Фрагмент програмного коду, пов’язаного з логікою взаємодії серверної частини з БД
+1. // Загрузка даних в DataGridView 
+2. private void LoadData() 
+3. { 
+4. using (SqlConnection connection = new SqlConnection(connectionString)) 
+5. { 
+6. string query = "SELECT * FROM planting_seasons"; 
+7. SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection); 
+8. DataTable dataTable = new DataTable(); 
+9. dataAdapter.Fill(dataTable); 
+10. dataGridView.DataSource = dataTable; 
+11. } 
+12. } 
+13. // Обработчик кнопки "Зберегти" — обновление данных в БД 
+14. private void saveButton_Click(object sender, EventArgs e) 
+15. { 
+16. if (string.IsNullOrEmpty(idTextBox.Text)) 
+17. { 
+18. MessageBox.Show("Выберите строку для редактирования."); 
+19. return; 
+20. } 
+21. using (SqlConnection connection = new SqlConnection(connectionString)) 
+22. { 
+23. string query = "UPDATE planting_seasons SET crop = @crop, season = @season, notes = @notes WHERE id = @id"; 
+24. SqlCommand command = new SqlCommand(query, connection); 
+25. command.Parameters.AddWithValue("@id", idTextBox.Text); 
+26. command.Parameters.AddWithValue("@crop", cropTextBox.Text); 
+27. command.Parameters.AddWithValue("@season", seasonComboBox.SelectedItem.ToString()); 
+28. command.Parameters.AddWithValue("@notes", notesTextBox.Text); 
+29. connection.Open(); 
+30. command.ExecuteNonQuery(); 
+31. connection.Close(); 
+32. } 
+33. MessageBox.Show("Дані оновлені."); 
+34. LoadData(); // Перезагружаем данные в DataGridView 
+35. } 
+36. // Обработчик кнопки "Видалити" — удаление строки из БД 
+37. private void deleteButton_Click(object sender, EventArgs e) 
+38. { 
+39. if (string.IsNullOrEmpty(idTextBox.Text)) 
+40. { 
+41. MessageBox.Show("Виберіть рядок для видалення."); 
+42. return; 
+43. } 
+44. using (SqlConnection connection = new SqlConnection(connectionString)) 
+45. { 
+46. string query = "DELETE FROM planting_seasons WHERE id = @id"; 
+47. SqlCommand command = new SqlCommand(query, connection); 
+48. command.Parameters.AddWithValue("@id", idTextBox.Text); 
+49. connection.Open(); 
+50. command.ExecuteNonQuery(); 
+51. connection.Close(); 
+52. } 
+53. MessageBox.Show("Дані видалені."); 
+54. LoadData(); // Перезагружаем данные в DataGridView 
+55. } 
+56. // Обработчик кнопки "Добавити" — добавление новой строки в БД 
+57. private void addButton_Click(object sender, EventArgs e) 
+58. { 
+59. if (string.IsNullOrEmpty(cropTextBox.Text) || string.IsNullOrEmpty(seasonComboBox.SelectedItem?.ToString()) || 
+string.IsNullOrEmpty(notesTextBox.Text)) 
+60. { 
+61. MessageBox.Show("Будь ласка, заповніть усі поля."); 
+62. return; 
+63. } 
+64. using (SqlConnection connection = new SqlConnection(connectionString)) 
+65. { 
+66. string query = "INSERT INTO planting_seasons (crop, season, notes) VALUES (@crop, @season, @notes)"; 
+67. SqlCommand command = new SqlCommand(query, connection); 
+68. command.Parameters.AddWithValue("@crop", cropTextBox.Text); 
+69. command.Parameters.AddWithValue("@season", seasonComboBox.SelectedItem.ToString()); 
+70. command.Parameters.AddWithValue("@notes", notesTextBox.Text); 
+71. connection.Open(); 
+72. command.ExecuteNonQuery(); 
+73. connection.Close(); 
+74. } 
+75. MessageBox.Show("Дані добавленні."); 
+76. LoadData(); // Перезагружаем данные в DataGridView 
+77. } 
+
+
+
+
+
+
+
+ДОДАТОК Г
+Фрагмент коду для авторизації / реєстрації користувача
+01 from app.models.user import User
+02 from app import db
+03
+04 ns_users = Namespace('users', description='Операції з користувачами')
+5 user_model = ns_users.model('User', {
+6     'name': fields.String(required=True),
+7     'email': fields.String(required=True),
+8     'password': fields.String(required=True)
+9 })
+10
+11 login_model = ns_users.model('Login', {
+12     'email': fields.String(required=True),
+13     'password': fields.String(required=True)
+14 })
+15
+16 @ns_users.route('/register')
+17 class Register(Resource):
+18     @ns_users.expect(user_model)
+19     def post(self):
+20         data = request.json
+21         if User.query.filter_by(email=data['email']).first():
+22             return {"error": "Користувач вже існує"}, 400
+23         hashed_pw = generate_password_hash(data['password'])
+24         new_user = User(name=data['name'], email=data['email'], password=hashed_pw)
+25         db.session.add(new_user)
+26         db.session.commit()
+27         return {"message": "Реєстрація успішна"}, 201
+
+28 @ns_users.route('/login')
+29 class Login(Resource):
+30     @ns_users.expect(login_model)
+31     def post(self):
+32         data = request.json
+33         user = User.query.filter_by(email=data['email']).first()
+34         if not user or not check_password_hash(user.password, data['password']):
+35             return {"error": "Невірні дані"}, 401
+36         access_token = create_access_token(identity=user.id)
+37         return {"access_token": access_token}, 200
+38
+39 @ns_users.route('/profile')
+40 class Profile(Resource):
+41     @jwt_required()
+42     def get(self):
+43         user_id = get_jwt_identity()
+44         user = User.query.get(user_id)
+45         if not user:
+46             return {"error": "Користувача не знайдено"}, 404
+47         return {"name": user.name, "email": user.email}, 200
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК Д
+Аналіз сенсорних даних ґрунту (бізнес-логіка)
+01 from app.models.analysis import SoilAnalysis, Threshold
+02 from datetime import datetime
+03 from app import db
+04
+05 def analyze_soil_data(data):
+06     thresholds = {t.parameter: t.value for t in Threshold.query.all()}
+07     alerts = []
+09     if data.get("moisture") and data["moisture"] > thresholds.get("moisture", 50):
+10         alerts.append("Вологість перевищує норму для культури.")
+11     if data.get("ph") and (data["ph"] < 5.5 or data["ph"] > 7.5):
+12         alerts.append("pH рівень виходить за рекомендовані межі.")
+13     if data.get("nitrogen") and data["nitrogen"] < thresholds.get("nitrogen", 20):
+14         alerts.append("Низький рівень нітрогену.")
+15
+16     event_type = "critical" if alerts else "normal"
+17
+18     if alerts:
+19         record = SoilAnalysis(
+20             location=data["location"],
+21             culture=data.get("culture", "невідомо"),
+22             date=datetime.utcnow(),
+23             result="; ".join(alerts)
+24         )
+25         db.session.add(record)
+26         db.session.commit()
+27
+28     return alerts, event_type
+ДОДАТОК Е
+Резервне копіювання / імпорт даних ґрунту
+01 from import request, send_file
+02 from import Namespace, Resource
+03 import json
+04 from app import db
+05 from app.models.soil import SoilAnalysis
+06 from app.utils.auth import admin_required
+07
+08 ns_backup = Namespace('backup', description='Операції резервного копіювання')
+09
+10 @ns_backup.route('/export')
+11 class Export(Resource):
+12     @admin_required
+13     def get(self):
+14         data = {
+15             "soil_data": [a.as_dict() for a in SoilAnalysis.query.all()]
+16         }
+17         with open("backup.json", "w") as f:
+18             json.dump(data, f)
+19         return send_file("backup.json", as_attachment=True)
+20
+21 @ns_backup.route('/import')
+22 class Import(Resource):
+23     @admin_required
+24     def post(self):
+25         if 'file' not in request.files:
+26             return {"message": "Файл не надано"}, 400
+27         file = request.files['file']
+28         if not file.filename.endswith(".json"):
+29             return {"message": "Невірний формат"}, 400
+30
+31         data = json.load(file)
+32         SoilAnalysis.query.delete()
+33         for entry in data.get("soil_data", []):
+34             record = SoilAnalysis(**entry)
+35             db.session.add(record)
+36         db.session.commit()
+37         return {"message": "Дані відновлено"}, 200
+
