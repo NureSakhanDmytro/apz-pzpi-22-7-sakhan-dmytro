@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Система аналізу ґрунту</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header onclick="openTab('home')" style="cursor: pointer;">
+  <h1>🌱 Система моніторингу та аналізу ґрунту</h1>
+  <div class="lang-switch">
+  <button onclick="setLanguage('uk')">UA</button>
+  <button onclick="setLanguage('en')">EN</button>
+</div>
+
+</header>
+public partial class AdminLoginForm : Form
+{
+    private string connectionString = "Data Source=JOPS;Initial Catalog=Проект_Земля;Integrated Security=True;Encrypt=False";
+
+    public AdminLoginForm()
+    {
+        InitializeComponent();
+    }
+
+    private void btnLogin_Click(object sender, EventArgs e)
+    {
+        string username = txtUsername.Text;
+        string password = txtPassword.Text;
+
+        try
+        {
+            if (CheckAdminAccess(username, password))
+            {
+                MessageBox.Show("Добро пожаловать, администратор!");
+                админКуточок adminForm = new админКуточок();
+                adminForm.Show(); // Здесь используется созданный экземпляр adminForm
+                this.Hide();
+            }
+<nav class="tabs">
+  <button onclick="openTab('soil')" data-tab="soil">Аналіз ґрунту</button>
+  <button onclick="openTab('weather')" data-tab="weather">Метео</button>
+  <button onclick="openTab('seasons')" data-tab="seasons">Сезони</button>
+  <button onclick="openTab('recommendations')" data-tab="recommendations">Рекомендації</button>
+  <button onclick="checkAdminAccess()" data-tab="admin">Адмін</button>
+  <button onclick="openTab('register')" data-tab="register">Реєстрація</button>
+</nav>
+
+<main>
+  <section id="home" class="tab-content">
+  <h2 id="homeTitle">Головне меню</h2>
+  <ul>
+    <li id="li1">📌 Введіть достовірні дані про ґрунт, метео та сезони.</li>
+    <li id="li2">📌 Усі дані залишаються лише у вашому браузері (локальне збереження).</li>
+    <li id="li3">📌 Ви можете змінити дані у будь-який момент.</li>
+    <li id="li4">📌 Кнопка "Зберегти" фіксує інформацію в межах цієї сесії.</li>
+    <li id="li5">📌 Панель адміністратора та експорт даних – у розробці.</li>
+  </ul>
+</section>
+
+  <section id="soil" class="tab-content">
+    <h2>Аналіз ґрунту</h2>
+    <input type="text" placeholder="Локація">
+    <input type="text" placeholder="pH">
+    <input type="text" placeholder="Нітроген">
+    <input type="text" placeholder="Калій">
+    <input type="text" placeholder="Фосфор">
+    <input type="text" placeholder="Вологість">
+    <input type="text" placeholder="Щільність">
+    <input type="text" placeholder="Культура">
+    
+    <button class="save-btn" onclick="saveSoil()">Зберегти</button>
+<div id="soilResult"></div>
+
+  </section>
+
+  <section id="weather" class="tab-content">
+    <h2>Метеорологічні дані</h2>
+    <input type="text" placeholder="Температура">
+    <input type="text" placeholder="Вологість">
+    <input type="text" placeholder="Опади">
+    <input type="text" placeholder="Швидкість вітру">
+    <textarea placeholder="Примітки"></textarea>
+    
+    <button class="save-btn" onclick="saveWeather()">Зберегти</button>
+<div id="weatherResult"></div>
+
+
+  </section>
+
+  <section id="seasons" class="tab-content">
+    <h2>Сезони висадки</h2>
+    <input type="text" placeholder="Культура">
+    <input type="text" placeholder="Сезон">
+    <textarea placeholder="Примітки"></textarea>
+    
+    <button class="save-btn" onclick="saveSeason()">Зберегти</button>
+<div id="seasonResult"></div>
+
+
+  </section>
+
+  <section id="recommendations" class="tab-content">
+    <h2>Рекомендації</h2>
+    <textarea rows="10" readonly>
+Рекомендації
+    </textarea>
+  </section>
+
+
+<section id="admin" class="tab-content">
+  <h2>Панель адміністратора</h2>
+
+  <button onclick="loadUser()">👤 Переглянути зареєстрованого користувача</button>
+  <div id="adminUserInfo" style="margin-top: 1em; border: 1px solid #ccc; padding: 10px; display: none;">
+    <p><strong>Ім’я:</strong> <span id="adminName"></span></p>
+    <p><strong>Email:</strong> <span id="adminEmail"></span></p>
+    <p><strong>Пароль:</strong> <span id="adminPassword"></span></p>
+  </div>
+
+  <button onclick="localStorage.clear(); location.reload();" style="margin-top: 1em; color: red;">
+    ❌ Очистити усі збережені дані
+  </button>
+</section>
+
+
+  <section id="admin" class="tab-content">
+    <h2>Панель адміністратора</h2>
+    <p>Форма керування в розробці.</p>
+  </section>
+
+
+
+  <section id="register" class="tab-content">
+    <h2>Реєстрація</h2>
+    <input type="text" id="regName" placeholder="Ім’я">
+    <input type="email" id="regEmail" placeholder="Email">
+    <input type="password" id="regPassword" placeholder="Пароль">
+    <button onclick="registerUser()">Зареєструватися</button>
+    <p id="regMessage"></p>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f9f9f9;
+}
+
+header {
+  background-color: #2d6a4f;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.tabs {
+  display: flex;
+  overflow-x: auto;
+  background: #d8f3dc;
+  padding: 0.5rem;
+}
+
+.tabs button {
+  flex: 1;
+  min-width: 150px;
+  padding: 10px;
+  margin: 0 5px;
+  background-color: #40916c;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tabs button:hover {
+  background-color: #2d6a4f;
+}
+
+.tab-content {
+  display: none;
+  padding: 20px;
+}
+
+.tab-content input,
+.tab-content textarea {
+  display: block;
+  margin: 10px 0;
+  padding: 8px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.tab-content button {
+  padding: 10px 20px;
+  background-color: #52b788;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.tab-content button:hover {
+  background-color: #40916c;
+}
+
+
+function saveSoil() {
+  const inputs = document.querySelectorAll('#soil input');
+  const values = Array.from(inputs).map(i => i.placeholder + ': ' + i.value).join('<br>');
+  document.getElementById('soilResult').innerHTML = "<strong>Введені дані:</strong><br>" + values;
+}
+
+function saveWeather() {
+  const inputs = document.querySelectorAll('#weather input');
+  const notes = document.querySelector('#weather textarea').value;
+  const values = Array.from(inputs).map(i => i.placeholder + ': ' + i.value).join('<br>');
+  document.getElementById('weatherResult').innerHTML = "<strong>Введені дані:</strong><br>" + values + "<br>Примітки: " + notes;
+}
+
+function saveSeason() {
+  const inputs = document.querySelectorAll('#seasons input');
+  const notes = document.querySelector('#seasons textarea').value;
+  const values = Array.from(inputs).map(i => i.placeholder + ': ' + i.value).join('<br>');
+  document.getElementById('seasonResult').innerHTML = "<strong>Введені дані:</strong><br>" + values + "<br>Примітки: " + notes;
+}
+
+
+function saveSoil() {
+  const inputs = document.querySelectorAll('#soil input');
+  const values = Array.from(inputs).map(i => i.placeholder + ': ' + i.value).join('<br>');
+  document.getElementById('soilResult').innerHTML = "<strong>Введені дані:</strong><br>" + values;
+
+  // Очищення полів
+  inputs.forEach(i => i.value = '');
+}
+
+function saveWeather() {
+  const inputs = document.querySelectorAll('#weather input');
+  const textarea = document.querySelector('#weather textarea');
+  const values = Array.from(inputs).map(i => i.placeholder + ': ' + i.value).join('<br>');
+  document.getElementById('weatherResult').innerHTML = "<strong>Введені дані:</strong><br>" + values + "<br>Примітки: " + textarea.value;
+
+  // Очищення полів
+  inputs.forEach(i => i.value = '');
+  textarea.value = '';
+}
+
+function saveSeason() {
+  const inputs = document.querySelectorAll('#seasons input');
+  const textarea = document.querySelector('#seasons textarea');
+  const values = Array.from(inputs).map(i => i.placeholder + ': ' + i.value).join('<br>');
+  document.getElementById('seasonResult').innerHTML = "<strong>Введені дані:</strong><br>" + values + "<br>Примітки: " + textarea.value;
+
+  // Очищення полів
+  inputs.forEach(i => i.value = '');
+  textarea.value = '';
+}
+
+
+
+function openTab(tabId) {
+  const contents = document.querySelectorAll('.tab-content');
+  contents.forEach(content => content.style.display = 'none');
+
+  const tab = document.getElementById(tabId);
+  if (tab) tab.style.display = 'block';
+}
+
+function registerUser() {
+  const name = document.getElementById('regName').value;
+  const email = document.getElementById('regEmail').value;
+  const password = document.getElementById('regPassword').value;
+
+  if (name && email && password) {
+    const user = { name, email, password };
+    localStorage.setItem('user', JSON.stringify(user));
+    document.getElementById('regMessage').textContent = "✅ Реєстрація успішна!";
+  } else {
+    document.getElementById('regMessage').textContent = "❗ Всі поля обов’язкові!";
+  }
+}
+
+function loadUser() {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user) {
+    document.getElementById('adminName').textContent = user.name;
+    document.getElementById('adminEmail').textContent = user.email;
+    document.getElementById('adminPassword').textContent = user.password;
+    document.getElementById('adminUserInfo').style.display = 'block';
+  } else {
+    alert("❗ Користувача не знайдено.");
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  openTab('home');
+});
+
+function checkAdminAccess() {
+  const correctPassword = "sa290583"; // 🔒 Зміни на свій пароль
+  const input = prompt("Введіть пароль для доступу до панелі адміністратора:");
+
+  if (input === correctPassword) {
+    openTab('admin');
+  } else if (input !== null) {
+    alert("❌ Невірний пароль!");
+  }
+}
+
+
+
+const translations = {
+  uk: {
+    homeTitle: "Головне меню",
+    soil: "Аналіз ґрунту",
+    weather: "Метео",
+    seasons: "Сезони",
+    recommendations: "Рекомендації",
+    admin: "Адмін",
+    register: "Реєстрація",
+    save: "Зберегти",
+    soilTitle: "Аналіз ґрунту",
+    weatherTitle: "Метеорологічні дані",
+    seasonsTitle: "Сезони висадки",
+    adminTitle: "Панель адміністратора",
+    regTitle: "Реєстрація",
+    li1: "📌 Введіть достовірні дані про ґрунт, метео та сезони.",
+    li2: "📌 Усі дані залишаються лише у вашому браузері (локальне збереження).",
+    li3: "📌 Ви можете змінити дані у будь-який момент.",
+    li4: "📌 Кнопка \"Зберегти\" фіксує інформацію в межах цієї сесії.",
+    li5: "📌 Панель адміністратора та експорт даних – у розробці."
+  },
+  en: {
+    homeTitle: "Main Menu",
+    soil: "Soil Analysis",
+    weather: "Weather",
+    seasons: "Seasons",
+    recommendations: "Recommendations",
+    admin: "Admin",
+    register: "Register",
+    save: "Save",
+    soilTitle: "Soil Analysis",
+    weatherTitle: "Meteorological Data",
+    seasonsTitle: "Planting Seasons",
+    adminTitle: "Admin Panel",
+    regTitle: "Registration",
+    li1: "📌 Enter accurate soil, weather, and planting season data.",
+    li2: "📌 All data is stored locally in your browser.",
+    li3: "📌 You can modify the data at any time.",
+    li4: "📌 The 'Save' button stores the data for this session.",
+    li5: "📌 Admin panel and data export are under development."
+  }
+};
+
+function setLanguage(lang) {
+  document.querySelector("h2#homeTitle").textContent = translations[lang].homeTitle;
+  document.querySelector("button[data-tab='soil']").textContent = translations[lang].soil;
+  document.querySelector("button[data-tab='weather']").textContent = translations[lang].weather;
+  document.querySelector("button[data-tab='seasons']").textContent = translations[lang].seasons;
+  document.querySelector("button[data-tab='recommendations']").textContent = translations[lang].recommendations;
+  document.querySelector("button[data-tab='admin']").textContent = translations[lang].admin;
+  document.querySelector("button[data-tab='register']").textContent = translations[lang].register;
+  document.querySelectorAll("button.save-btn").forEach(btn => btn.textContent = translations[lang].save);
+
+  document.querySelector("section#soil h2").textContent = translations[lang].soilTitle;
+  document.querySelector("section#weather h2").textContent = translations[lang].weatherTitle;
+  document.querySelector("section#seasons h2").textContent = translations[lang].seasonsTitle;
+  document.querySelector("section#admin h2").textContent = translations[lang].adminTitle;
+  document.querySelector("section#register h2").textContent = translations[lang].regTitle;
+  document.getElementById('li1').textContent = translations[lang].li1;
+  document.getElementById('li2').textContent = translations[lang].li2;
+  document.getElementById('li3').textContent = translations[lang].li3;
+  document.getElementById('li4').textContent = translations[lang].li4;
+  document.getElementById('li5').textContent = translations[lang].li5;
+}
