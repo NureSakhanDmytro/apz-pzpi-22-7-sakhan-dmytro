@@ -135,6 +135,7 @@
 Посилання на відеозапис та хронологічний опис доповіді
 
 Відеозапис доповіді на https://youtu.be/wK7cOyoj47Q
+ URL на код на GitHub:https://github.com/NureSakhanDmytro/apz-pzpi-22-7-sakhan-dmytro/edit/main/Lab5/pzpi-22-7-sakhan-dmytro-lab5.txt
 
 00:00 - Привітання, вступ 
 00:36 - Постановка задачі лабораторної 
